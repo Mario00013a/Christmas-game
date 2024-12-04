@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Christmas Memory Game</title>
+  <style>
+    body { text-align: center; font-family: Arial, sans-serif; background-color: #f7f4e9; }
+    h1 { color: #d62828; }
+    .game-area { display: grid; grid-template-columns: repeat(4, 100px); gap: 10px; margin: 20px auto; width: 420px; }
+    .card { width: 100px; height: 100px; background: #ffe066; border: 2px solid #f4a261; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 40px; border-radius: 10px; }
+    .hidden { background: #f2cc8f; cursor: pointer; }
+    .revealed { background: white; cursor: default; }
+    #message { margin-top: 20px; font-size: 20px; font-weight: bold; color: #003049; }
+  </style>
+</head>
+<body>
+  <h1>Christmas Memory Game</h1>
+  <div class="game-area" id="gameArea"></div>
+  <p id="message"></p>
+  <script>
+    const images = ['🎄', '🎅', '☃️', '🦌', '🎁', '🔔', '❄️', '🕯️'];
+    let cards = [...images, ...images];
+    cards = cards.sort(() => Math.random() - 0.5);
+
+    const gameArea = document.getElementById('gameArea');
+    const message = document.getElementById('message');
+    let firstCard = null;
+    let secondCard = null;
+
+    cards.forEach(icon => {
+      const card = document.createElement('div');
+      card.classList.add('card', 'hidden');
+      card.dataset.icon = icon;
+      gameArea.appendChild(card);
+
+      card.addEventListener('click', () => revealCard(card));
+    });
+
+    function revealCard(card) {
+      if (card.classList.contains('revealed') || secondCard) return;
+
+      card.textContent = card.dataset.icon;
+      card.classList.remove('hidden');
+      card.classList.add('revealed');
+
+      if (!firstCard) {
+        firstCard = card;
+      } else {
+        secondCard = card;
+        checkMatch();
+      }
+    }
+
+    function checkMatch() {
+      if (firstCard.dataset.icon === secondCard.dataset.icon) {
+        message.textContent = '🎉 Congrats! You just won a prize! 🎉';
+        resetCards(true);
+      } else {
+        message.textContent = '😔 Sorry! Try again! 😔';
+        setTimeout(() => resetCards(false), 1000);
+      }
+    }
+
+    function resetCards(match) {
+      if (!match) {
+        firstCard.textContent = '';
+        secondCard.textContent = '';
+        firstCard.classList.add('hidden');
+        secondCard.classList.add('hidden');
+      }
+      firstCard = null;
+      secondCard = null;
+    }
+  </script>
+</body>
+</html>
